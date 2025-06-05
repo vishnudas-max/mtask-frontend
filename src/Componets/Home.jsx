@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import {api} from '../confg'
+import api from '../confg'
+import MessageModal from './MessageModal';
 
 const Home = () => {
 
-    console.log("API call to:", process.env.REACT_APP_BASE_API + "/orders/");
+    // states to manage error modals
+    const [showModal, setShowModal] = useState(false);
+    const [modalMsg, setModalMsg] = useState("");
+    const [modalType, setModalType] = useState("success")
 
     const [form, setForm] = useState({
-        orderid: '',
-        customername: '',
+        order_id: '',
+        customer_name: '',
         product_name: '',
         price: '',
     });
@@ -24,7 +28,7 @@ const Home = () => {
 
     const handleOrderID = (e) => {
         const value = e.target.value;
-        setForm({ ...form, orderid: value });
+        setForm({ ...form, order_id: value });
 
         if (!validateAlphanumeric(value)) {
             setError((prev) => ({ ...prev, orderid: 'Order ID must be alphanumeric' }));
@@ -36,7 +40,7 @@ const Home = () => {
 
     const handleCustomerName = (e) => {
         const value = e.target.value;
-        setForm({ ...form, customername: value });
+        setForm({ ...form, customer_name: value });
 
         if (!validateAlphanumeric(value)) {
             setError((prev) => ({ ...prev, customername: 'Customer name must be alphanumeric' }));
@@ -72,21 +76,59 @@ const Home = () => {
         // Check for validation errors
         const hasErrors = Object.values(error).some((err) => err !== '');
         if (hasErrors) {
-            alert("Please fix validation errors before submitting.");
+
+            setModalMsg('Please fix validation errors before submitting.');
+            setModalType("error");
+            setShowModal(true);
             return;
         }
 
-        // Check for empty fields
-        const hasEmptyFields = Object.values(form).some((val) => val.trim() === '');
+        // Check for empty fields (consider only string fields for trim)
+        const hasEmptyFields = Object.entries(form).some(([key, val]) => {
+            // Check if val is string and empty after trim OR val is null/undefined
+            if (typeof val === 'string') {
+                return val.trim() === '';
+            }
+            return val === null || val === undefined || val === '';
+        });
+
         if (hasEmptyFields) {
-            alert("Please fill in all fields before submitting.");
+
+            setModalMsg('Please fill in all fields before submitting.');
+            setModalType("error");
+            setShowModal(true);
             return;
         }
 
-        api.post('orders/',form).then(result=>console.log(result)).catch(error=>console.log(error))
+        api.post('orders/', form)
+            .then(result => {
+                console.log(result);
+                setModalMsg("Order created successfully!");
+                setModalType("success");
+                setShowModal(true);
+            })
+            .catch(error => {
+                if (error.response && error.response.data) {
+                    const errors = error.response.data;
 
-    
+                    // Combine all field errors into a single message
+                    const errorMessages = Object.entries(errors)
+                        .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+                        .join('\n');
+                    console.log(errorMessages)
+                    setModalMsg(errorMessages);
+                    setModalType("error");
+                    setShowModal(true);
+                } else {
+                    console.log('something went wrong.please try again.')
+                    setModalMsg("Something went wrong. Please try again.");
+                    setModalType("error");
+                    setShowModal(true);
+                }
+            });
+
     };
+
 
 
     return (
@@ -98,7 +140,7 @@ const Home = () => {
                         <label htmlFor="orderid" className='basis-1/5'>Order ID:</label>
                         <input
                             onChange={e => handleOrderID(e)}
-                            value={form.orderid} className='bg-transparent w-full basis-4/5 outline-none border-b-[1px] border-black ' type="text" placeholder='Enter Order ID' name='orderid' />
+                            value={form.order_id} className='bg-transparent w-full basis-4/5 outline-none border-b-[1px] border-black ' type="text" placeholder='Enter Order ID' name='orderid' />
                     </div>
                     {error.orderid && <p className='text-[13px] text-red-600'>{error.orderid}</p>}
                 </div>
@@ -107,7 +149,7 @@ const Home = () => {
                         <label htmlFor="customername" className='basis-1/5'>Customer Name:</label>
                         <input
                             onChange={e => handleCustomerName(e)}
-                            value={form.customername} className='bg-transparent basis-4/5  w-full outline-none border-b-[1px] border-black ' type="text" placeholder='Enter Customer Name' name='orderid' />
+                            value={form.customer_name} className='bg-transparent basis-4/5  w-full outline-none border-b-[1px] border-black ' type="text" placeholder='Enter Customer Name' name='orderid' />
                     </div>
                     {error.customername && <p className='text-[13px] text-red-600'>{error.customername}</p>}
                 </div>
@@ -133,6 +175,13 @@ const Home = () => {
                 </div>
                 <button className='bg-blue-500 rounded-md px-3 py-2 mt-5' onClick={submitdata}>Save Order</button>
             </div>
+            {showModal && (
+                <MessageModal
+                    message={modalMsg}
+                    type={modalType}
+                    onClose={() => setShowModal(false)}
+                />
+            )}
         </div>
     );
 }
