@@ -59,6 +59,7 @@ const Orders = () => {
                             <tr>
                                 <th className="px-4 py-2 border">#</th>
                                 <th className="px-4 py-2 border">Order ID</th>
+                                <th className="px-4 py-2 border">Product Name</th>
                                 <th className="px-4 py-2 border">Customer Name</th>
                                 <th className="px-4 py-2 border">Status</th>
                                 <th className="px-4 py-2 border">action</th>
@@ -69,6 +70,7 @@ const Orders = () => {
                                 <tr key={order.order_id} className="text-center">
                                     <td className="px-4 py-2 border">{index + 1}</td>
                                     <td className="px-4 py-2 border">{order.order_id}</td>
+                                    <td className="px-4 py-2 border">{order.product_name}</td>
                                     <td className="px-4 py-2 border">{order.customer_name}</td>
                                     <td className="px-4 py-2 border capitalize">{order.status ? order.status : 'Pending'}</td>
                                     <td className="px-4 py-2 border">{order.status !== 'delivered' && order.status !== 'cancelled' &&
