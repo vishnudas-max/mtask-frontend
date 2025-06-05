@@ -106,6 +106,13 @@ const Home = () => {
                 setModalMsg("Order created successfully!");
                 setModalType("success");
                 setShowModal(true);
+                setForm({
+                    order_id: '',
+                    customer_name: '',
+                    product_name: '',
+                    price: '',
+                })
+
             })
             .catch(error => {
                 if (error.response && error.response.data) {
