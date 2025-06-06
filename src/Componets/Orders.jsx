@@ -20,31 +20,31 @@ const Orders = () => {
     if (loading) return <p className='text-center'>Loading orders...</p>;
     if (error) return <p className='text-center text-red'>Error: {error}</p>;
 
-    const sendCancelMail = async (order_id) => {
-        try {
-            const response = await api.post(`/update/order/${order_id}/`);
+    // const sendCancelMail = async (order_id) => {
+    //     try {
+    //         const response = await api.post(`/update/order/${order_id}/`);
 
-            if (response.data && response.data.message) {
-                setModalMsg(response.data.message);
-                setModalType("error");
-                setShowModal(true);
-                console.log(response.data)
-                return
-            } else {
-                setModalMsg("Email to cancell order send successfully");
-                setModalType("error");
-                setShowModal(true);
-                console.log(response.data)
-                return
-            }
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || "Something went wrong while cancelling the order.";
-            setModalMsg(errorMsg);
-            setModalType("error");
-            setShowModal(true);
-            return
-        }
-    };
+    //         if (response.data && response.data.message) {
+    //             setModalMsg(response.data.message);
+    //             setModalType("error");
+    //             setShowModal(true);
+    //             console.log(response.data)
+    //             return
+    //         } else {
+    //             setModalMsg("Email to cancell order send successfully");
+    //             setModalType("error");
+    //             setShowModal(true);
+    //             console.log(response.data)
+    //             return
+    //         }
+    //     } catch (error) {
+    //         const errorMsg = error.response?.data?.message || "Something went wrong while cancelling the order.";
+    //         setModalMsg(errorMsg);
+    //         setModalType("error");
+    //         setShowModal(true);
+    //         return
+    //     }
+    // };
 
     return (
         <div className="p-4">
@@ -62,7 +62,7 @@ const Orders = () => {
                                 <th className="px-4 py-2 border">Product Name</th>
                                 <th className="px-4 py-2 border">Customer Name</th>
                                 <th className="px-4 py-2 border">Status</th>
-                                <th className="px-4 py-2 border">action</th>
+                                {/* <th className="px-4 py-2 border">action</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -73,12 +73,12 @@ const Orders = () => {
                                     <td className="px-4 py-2 border">{order.product_name}</td>
                                     <td className="px-4 py-2 border">{order.customer_name}</td>
                                     <td className="px-4 py-2 border capitalize">{order.status ? order.status : 'Pending'}</td>
-                                    <td className="px-4 py-2 border">{order.status !== 'delivered' && order.status !== 'cancelled' &&
+                                    {/* <td className="px-4 py-2 border">{order.status !== 'delivered' && order.status !== 'cancelled' &&
                                         <button onClick={() => sendCancelMail(order.order_id)} className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-600 hover:text-white transition-colors duration-200">
                                             Cancel
                                         </button>
                                     }
-                                    </td>
+                                    </td> */}
                                 </tr>
                             ))}
                         </tbody>
